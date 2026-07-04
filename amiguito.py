@@ -64,6 +64,7 @@ long_facts = ["DRAM stores each bit as a charge on a capacitor that leaks, so it
 
 
 
+
 def display_menu():
     print("Here are some things you can do with Amiguito:")
     print("- feed: to give Amiguito some food and increase fullness")
@@ -88,11 +89,18 @@ def clamp_stats(stats):
 class Pet:
     def __init__(self, name):
         self.name = name
+
+        self.inventory = ["apple", "ball", "blanket"]
         try:
             with open("amiguito_state.json", "r") as file:
-                self.stats = json.load(file)
+                data = json.load(file)
+                self.stats = data["stats"]
+                self.inventory = data["inventory"]
+
+                
         except FileNotFoundError:
                 self.stats = {"last_updated": time.time(), "fullness": 80, "thirst": 80, "energy": 80, "happiness": 80}
+                self.inventory = ["apple", "ball", "blanket"]
     def show_stats(self):
         print ()
         print()
@@ -105,7 +113,7 @@ class Pet:
         print("---Happiness:", self.stats["happiness"], "/100---")
         print()
         print ()
-    
+      
 
     def state_of_being(self):
         if self.stats["fullness"] < 30:
@@ -120,11 +128,30 @@ class Pet:
         if self.stats["happiness"] < 30:
             print ()
             print("I am feeling bored. Let's find something fun to do together!")
+    
+    def add_to_inventory(self, item):
+        self.inventory.append(item)
+        print(f"{item} has been added to my inventory.")
+
+    def use_item(self, item):
+        if item == "apple":
+            print("You have an apple! Eating it will increase your fullness.")
+            self.stats["fullness"] += 10
+            clamp_stats(self.stats)
+            self.show_stats()
+        if item == "ball":
+            print("You have a ball! Playing with it will increase your happiness.")
+            self.stats["happiness"] += 10
+            clamp_stats(self.stats)
+            self.show_stats()
+        if item == "blanket":
+            print("You have a blanket! Using it will increase your energy.")
+            self.stats["energy"] += 10
+            clamp_stats(self.stats)
+            self.show_stats()
 
 amiguito = Pet("amiguito")
 stats = amiguito.stats
-
-
 
 
 
@@ -154,7 +181,6 @@ print()
 print("Hello! I am Amiguito 2.0 I am a work in progress, I am here to interact, play games, and learn new things with you. Let's have some fun together!")  
 display_menu()
 print()
-
 
 
 
@@ -263,9 +289,46 @@ while True:
         for key in ["fullness", "thirst", "energy", "happiness"]:
             stats[key] += 100
 
-    else:
-        print("Hmm, I'm not sure what that is. Let's try something else!")
-        stats["happiness"] -= 5 
+    elif topic.lower() == "inventory":
+        print("Here's my inventory: ")
+        for item in amiguito.inventory:
+            print()
+            print("-", item)
+            print()
+    elif topic.lower() == "use":
+        item = input("which item would you like to choose?")
+        if item.lower() in amiguito.inventory and item.lower() == "apple":
+            print("delicious apple! I love it!")
+            amiguito.inventory.remove("apple")
+            stats["fullness"] += 10
+        elif item.lower() in amiguito.inventory and item.lower() == "ball":
+            print("I love playing!")
+            amiguito.inventory.remove("ball")
+            stats["happiness"] += 10
+        elif item.lower() in amiguito.inventory and item.lower() == "blanket":
+            print("I feel so cozy and warm!")
+            amiguito.inventory.remove("blanket")
+            stats["energy"] += 10
+        else:
+            print("I'm not sure if I have that. Let's try something else!")
+            stats["happiness"] -= 5
+            
+    elif topic.lower() == "give":
+        item = input("Nice! which item would you like to give me?")
+        if item.lower() == "apple":
+            amiguito.add_to_inventory("apple")
+            print("Yum! I love apples! Thank you for giving me one!")
+        elif item.lower() == "ball":
+            amiguito.add_to_inventory("ball")
+            print("Thanks for giving me a ball to play with!")
+        elif item.lower() == "blanket":
+            amiguito.add_to_inventory("blanket")
+            print("Thanks for giving me a blanket! I feel so cozy and warm now!")
+        else:
+            print("Hmm, I'm not sure what that is. Let's try something else!")
+            stats["happiness"] -= 5
+    
+
 
 
 
@@ -278,7 +341,7 @@ while True:
     amiguito.state_of_being()
 
     with open("amiguito_state.json", "w") as file:
-        json.dump(stats,file)
+        json.dump ({"stats": stats, "inventory": amiguito.inventory}, file)
 
 
 
