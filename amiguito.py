@@ -63,7 +63,11 @@ long_facts = ["DRAM stores each bit as a charge on a capacitor that leaks, so it
     "The Universal Approximation Theorem (Cybenko, 1989) proves that a single hidden layer of neurons with enough units can approximate any continuous function to arbitrary precision. It sounds like a guarantee that neural nets can learn anything — but it doesn't say how many neurons you need, how to train them, or whether your optimizer will find the solution. It's an existence proof, not a recipe. Deep networks turned out to work better in practice for reasons that are still being fully understood.",]
 
 
-
+items = {
+        "apple" :{"stat": "fullness", "amount": 10, "message": "You have an apple! Eating it will increase your fullness."},
+        "ball": {"stat": "happiness", "amount": 10, "message": "You have a ball! Playing with it will increase your happiness."},
+        "blanket": {"stat": "energy", "amount": 10, "message": "You have a blanket! Hugging it will increase your energy."},
+        }
 
 def display_menu():
     print("Here are some things you can do with Amiguito:")
@@ -178,7 +182,7 @@ print()
 print()
 print(space)
 print()
-print("Hello! I am Amiguito 2.0 I am a work in progress, I am here to interact, play games, and learn new things with you. Let's have some fun together!")  
+print("Hello! I am Amiguito 2.5 I am a work in progress, I am here to interact, play games, and learn new things with you. Let's have some fun together!")  
 display_menu()
 print()
 
@@ -189,6 +193,7 @@ amiguito.show_stats()
 while True:
     now = time.time()
     elapsed = now - stats["last_updated"]
+    
     for key in ["fullness", "thirst", "energy", "happiness"]:
         stats[key] -= elapsed * (1/60)
         stats[key] = round(stats[key],1)
@@ -295,38 +300,28 @@ while True:
             print()
             print("-", item)
             print()
+
     elif topic.lower() == "use":
-        item = input("which item would you like to choose?")
-        if item.lower() in amiguito.inventory and item.lower() == "apple":
-            print("delicious apple! I love it!")
-            amiguito.inventory.remove("apple")
-            stats["fullness"] += 10
-        elif item.lower() in amiguito.inventory and item.lower() == "ball":
-            print("I love playing!")
-            amiguito.inventory.remove("ball")
-            stats["happiness"] += 10
-        elif item.lower() in amiguito.inventory and item.lower() == "blanket":
-            print("I feel so cozy and warm!")
-            amiguito.inventory.remove("blanket")
-            stats["energy"] += 10
+        item = input("which item would you like to choose? ").lower()
+        if item in items and item in amiguito.inventory:
+            stat = items[item]["stat"]
+            amount = items[item]["amount"]
+            stats[stat] += amount
+            amiguito.inventory.remove(item)
+            print(items[item]["message"])
+            print(f"{item} has been removed from your inventory.")
         else:
             print("I'm not sure if I have that. Let's try something else!")
             stats["happiness"] -= 5
-            
     elif topic.lower() == "give":
-        item = input("Nice! which item would you like to give me?")
-        if item.lower() == "apple":
-            amiguito.add_to_inventory("apple")
-            print("Yum! I love apples! Thank you for giving me one!")
-        elif item.lower() == "ball":
-            amiguito.add_to_inventory("ball")
-            print("Thanks for giving me a ball to play with!")
-        elif item.lower() == "blanket":
-            amiguito.add_to_inventory("blanket")
-            print("Thanks for giving me a blanket! I feel so cozy and warm now!")
+        item = input("which item would you like to give me? ").lower()
+        if item in items:
+            amiguito.inventory.append(item)
+            print(f"Thanks for giving me a {item}! I really appreciate it!")
         else:
-            print("Hmm, I'm not sure what that is. Let's try something else!")
+            print("I'm not sure what that is. Let's try something else!")
             stats["happiness"] -= 5
+   
     
 
 
