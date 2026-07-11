@@ -14,33 +14,36 @@ def home():
     
     with open("amiguito_state.json") as file:
         data =json.load(file)
+        stats = data["stats"]
+        inventory = data["inventory"]
+
     now = time.time()
-    elapsed = now-data["last_updated"]
+    elapsed = now-stats["last_updated"]
     decay = elapsed /10
     
 
     for key in ["fullness", "thirst", "energy", "happiness"]:
-        data[key] -= decay
-        if data[key] > 100:
-            data[key] =100
-        if data[key] < 0:
-            data[key] =0
-        data[key] = round(data[key], 1)
-    data["last_updated"] = now
+        stats[key] -= decay
+        if stats[key] > 100:
+            stats[key] =100
+        if stats[key] < 0:
+            stats[key] =0
+        stats[key] = round(stats[key], 1)
+    stats["last_updated"] = now
     with open("amiguito_state.json", "w") as file:
             json.dump(data, file)
-
+    
     mood = ""
-    if data['fullness'] < 30:
+    if stats['fullness'] < 30:
          mood += "im feeling hungry "
          mood+= ""
-    if data['thirst'] < 30:
+    if stats['thirst'] < 30:
         mood+= "im feeling thirsty "
         mood+=""
-    if data['energy'] <30:
+    if stats['energy'] <30:
         mood+= "im feeling tired "
         mood+=""
-    if data['happiness'] <30:
+    if stats['happiness'] <30:
         mood+= "im quite sad lets play "
         mood+=""
     face = ":)"
@@ -49,20 +52,23 @@ def home():
     bg = "lightgreen"
     if mood != "":
         bg = "lightgray"
-    
+        
+    inventory_display = ""
+    for item in inventory:
+        inventory_display += item + ", "
 
 
+    return '<br>' + '<meta http-equiv="refresh" content="10">' f" <style>body {{ background-color: {bg};font-size: 40px; }}</style>  {face} Fullness: {stats['fullness']}, Thirst: {stats['thirst']}, Energy: {stats['energy']}, Happiness: {stats['happiness']}, {mood}" + '<br>' + '<br>' + '<br>'+ '<form action="/feed" method="POST"><button type="submit">Feed</button></form>' + '<form action="/play" method="POST"><button type="submit">Play</button></form>'+ '<form action="/rest" method="POST"><button type="submit">Rest</button></form>' + '<form action="/drink" method="POST"><button type="submit">Drink</button></form>' + '<form action="/reset" method="POST"><button type="submit">Reset</button></form>' + '<br>' + '<br>' + inventory_display
 
-    return '<meta http-equiv="refresh" content="10">' f" <style>body {{ background-color: {bg}; }}</style>  {face} Fullness: {data['fullness']}, Thirst: {data['thirst']}, Energy: {data['energy']}, Happiness: {data['happiness']}, {mood}" + '<form action="/feed" method="POST"><button type="submit">Feed</button></form>' + '<form action="/play" method="POST"><button type="submit">Play</button></form>'+ '<form action="/rest" method="POST"><button type="submit">Rest</button></form>' + '<form action="/drink" method="POST"><button type="submit">Drink</button></form>' + '<form action="/reset" method="POST"><button type="submit">Reset</button></form>'
-    
 @app.route("/reset", methods=["POST"])
 def reset():
     with open("amiguito_state.json") as file:
         data = json.load(file)
-    data["fullness"] = 100
-    data["thirst"] = 100
-    data["energy"] = 100
-    data["happiness"] = 100
+        stats = data["stats"]
+    stats["fullness"] = 100
+    stats["thirst"] = 100
+    stats["energy"] = 100
+    stats["happiness"] = 100
     with open("amiguito_state.json", "w") as file:
         json.dump(data, file)
     return redirect("/")
@@ -70,7 +76,8 @@ def reset():
 def feed():
     with open("amiguito_state.json") as file:
         data = json.load(file)
-    data["fullness"] += 10
+        stats = data["stats"]
+    stats["fullness"] += 10
     with open("amiguito_state.json", "w") as file:
         json.dump(data, file)
     return redirect("/")
@@ -79,7 +86,8 @@ def feed():
 def play():
     with open("amiguito_state.json") as file:
         data= json.load(file)
-    data["happiness"] += 10
+        stats = data["stats"]
+    stats["happiness"] += 10
     with open ("amiguito_state.json", "w") as file:
         json.dump(data, file)
     return redirect("/")
@@ -88,7 +96,8 @@ def play():
 def rest():
     with open("amiguito_state.json") as file:
         data = json.load(file)
-    data["energy"] += 10
+        stats = data["stats"]
+    stats["energy"] += 10
     with open  ("amiguito_state.json", "w") as file:
         json.dump(data, file)
     return redirect("/")
@@ -97,7 +106,8 @@ def rest():
 def drink():
     with open("amiguito_state.json") as file:
         data = json.load(file)
-    data["thirst"] += 10
+        stats = data["stats"]
+    stats["thirst"] += 10
     with open("amiguito_state.json", "w") as file:
         json.dump(data, file)
     return redirect("/")
