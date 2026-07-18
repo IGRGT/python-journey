@@ -1,13 +1,14 @@
 
 #Simple contact book program that allows users to add, delete, edit, search, and view contacts. The program also keeps a history of user actions and saves the contacts to a JSON file.
 
+from datetime import datetime
 
 import json
 
 
 history = []
 def new_contact(name, phone, email):
-    new_entry = {"name": name, "phone": phone, "email": email}
+    new_entry = {"name": name, "phone": phone, "email": email, "date": timestamp()}
     contacts.append(new_entry)
 
 def delete_contact(name):
@@ -55,7 +56,9 @@ def add_contact(name, phone, email):
         new_contact(name, phone, email)
         print(f"Contact {name} added successfully.")
         return True
-    
+
+def timestamp():
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 class contact:
     def __init__(self, name, phone, email):
@@ -88,7 +91,7 @@ while True:
     print()
     topic = input("Welcome to the contact book! What would you like to do? ")
     print()
-    history.append(topic)
+    history.append(f" Topic: {topic}, time of request: {timestamp()}")
 
     if topic == "add":
         print()
@@ -126,7 +129,7 @@ while True:
         print("View contacts")
         print()
         for contact in contacts:
-            print(f"Name: {contact['name']}, Phone Number: {contact['phone']}, Email Adress: {contact['email']}")
+            print(f"Name: {contact['name']}, Phone Number: {contact['phone']}, Email Adress: {contact['email']}, Date: {contact.get ('date', 'unknown')}")
             print()
         if not contacts:
             print("No contacts found.")
