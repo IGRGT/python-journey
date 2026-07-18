@@ -26,7 +26,7 @@ def search_contact(name):
         print("Matched Contacts:")
         print()
         for contact in found_contacts:
-            print(f"Name: {contact['name']}, Phone Number: {contact['phone']}, Email Adress: {contact['email']}")
+            print(f"Name: {contact['name']}, Phone Number: {contact['phone']}, Email Adress: {contact['email']}, Date of Creation: {contact.get ('date', 'unknown')}")
             print()
         return True
     else:       
