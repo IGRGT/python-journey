@@ -96,8 +96,17 @@ while True:
     if topic == "add":
         print()
         name = input("Please enter your name: ")
+        while name == "":
+            print("That is not a valid name")
+            name = input("Please enter your name: ")
         phone = input("Please enter your phone number: ")
+        while not phone.isdigit() or len(phone) != 10:
+            print("That is not a valid phone number, please try again")
+            phone = input("Please enter yoyr phone number: ")
         email = input("please enter your email adress: ")
+        while email == "":
+            print("that is not a valid email")
+            email = input("please enter your email adress: ")
         print()
         add_contact(name, phone, email)
 
