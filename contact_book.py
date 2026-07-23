@@ -77,6 +77,10 @@ class contact:
             self.phone = phone
             self.email = email
 
+def count_contacts():
+    return len(contacts)
+
+
 
 try:
     with open("contacts.json", "r") as file:
@@ -144,6 +148,12 @@ while True:
             print("No contacts found.")
         else:
             print("Contacts displayed successfully.")
+
+    elif topic == "count":
+        print()
+        print(f"You have {count_contacts()} contacts.")
+        print()
+
 
     elif topic == "history":
         print()
